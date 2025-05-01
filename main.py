@@ -30,16 +30,10 @@ from utils.counter import increment_user_count, get_user_count
 from utils.init import initialize
 
 # Fix for asyncio error
-def setup_asyncio():
-    try:
-        loop = asyncio.get_event_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-    return loop
-
-# Initialize asyncio
-loop = setup_asyncio()
+try:
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+except:
+    pass
 
 # Load environment variables from .env file
 load_dotenv()
@@ -69,20 +63,6 @@ if torch.cuda.is_available():
     # Set deterministic algorithms for reproducibility
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-
-# Fix for torch path issue
-def setup_torch():
-    try:
-        # Initialize torch with custom settings
-        torch.set_num_threads(1)
-        torch.set_num_interop_threads(1)
-        # Disable torch's internal file watcher
-        torch.utils.data._utils.worker._worker_loop = None
-    except Exception as e:
-        st.warning(f"Warning: Could not fully initialize torch: {str(e)}")
-
-# Initialize torch
-setup_torch()
 
 from torch.amp import autocast
 
@@ -475,31 +455,26 @@ def check_ffmpeg_installation():
 def convert_to_mp3(wav_path, bitrate='64k'):
     """Convert WAV file to MP3 with specified bitrate"""
     try:
-        # Set custom ffmpeg path if available
-        if os.path.exists('/usr/bin/ffmpeg'):
-            AudioSegment.converter = '/usr/bin/ffmpeg'
-        elif os.path.exists('/usr/local/bin/ffmpeg'):
-            AudioSegment.converter = '/usr/local/bin/ffmpeg'
-        
-        # Load the WAV file
-        audio = AudioSegment.from_wav(wav_path)
+        # Load the WAV file using torchaudio
+        waveform, sample_rate = torchaudio.load(wav_path)
         
         # Create MP3 file path
         mp3_path = wav_path.replace('.wav', '.mp3')
         
-        # Export as MP3 with specified bitrate
-        audio.export(mp3_path, format='mp3', bitrate=bitrate)
+        # Save as MP3 using torchaudio
+        torchaudio.save(
+            mp3_path,
+            waveform,
+            sample_rate,
+            format='mp3',
+            encoding='mp3',
+            bits_per_sample=16
+        )
         
         return mp3_path
     except Exception as e:
         st.error(f"שגיאה בהמרת הקובץ ל-MP3: {str(e)}")
-        st.error("""
-        אנא וודא ש-ffmpeg מותקן בשרת:
-        1. התחבר לשרת דרך SSH
-        2. הרץ: sudo apt-get update
-        3. הרץ: sudo apt-get install ffmpeg
-        4. הפעל מחדש את האפליקציה
-        """)
+        st.error("אנא וודא שהספרייה torchaudio מותקנת כראוי.")
         return None
 
 def hide_streamlit_header_footer():
@@ -538,8 +513,8 @@ def main():
             st.info(f"⚡ CUDA: {gpu_info['cuda_version']} (יכולת {gpu_info['cuda_capability']}")
         with col3:
             st.info(f"💾 זיכרון כרטיס מסך: {gpu_info['total_memory']}")
-    # else:
-    #     st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
+    else:
+        st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
 
      # Load and display the custom expander HTML
     expander_html = load_html_file('expander.html')
@@ -622,7 +597,8 @@ def main():
             try:
                 if os.path.exists(audio_path):
                     display_name = name.replace('_', ' ').title()
-                    if display_name == "Original Audio":
+                    # st.markdown(f"**{display_name}**")
+                    if display_name == "Original":
                         display_name = "שמע מקורי"
                     elif display_name == "Male Voice":
                         display_name = "קול גבר"
@@ -630,29 +606,56 @@ def main():
                         display_name = "קול אישה"
                         
                     st.markdown(f"**{display_name}**")
-                    
-                    # Convert to MP3
-                    mp3_path = convert_to_mp3(audio_path, bitrate)
-                    if mp3_path:
-                        with open(mp3_path, 'rb') as audio_file:
-                            audio_bytes = audio_file.read()
-                            st.audio(audio_bytes, format='audio/mp3')
-                            st.markdown(
-                                create_download_link(audio_bytes, f"{name}.mp3", f"⬇️ הורד {display_name} (MP3)"),
-                                unsafe_allow_html=True
-                            )
-                        # Clean up MP3 file
-                        try:
-                            os.unlink(mp3_path)
-                        except:
-                            pass
+                    with open(audio_path, 'rb') as audio_file:
+                        audio_bytes = audio_file.read()
+                        st.audio(audio_bytes, format='audio/wav')
+                        st.markdown(
+                            create_download_link(audio_bytes, f"{name}.wav", f"⬇️ Download {display_name}"),
+                            unsafe_allow_html=True
+                        )
             finally:
                 # Clean up temporary audio files
                 if os.path.exists(audio_path):
                     try:
                         os.unlink(audio_path)
                     except Exception as e:
-                        st.warning(f"אזהרה: לא ניתן למחוק את קובץ השמע הזמני: {str(e)}")
+                        st.warning(f"Warning: Could not delete temporary audio file: {str(e)}")
+
+        # for name, audio_path in st.session_state.speaker_audios.items():
+        #     try:
+        #         if os.path.exists(audio_path):
+        #             display_name = name.replace('_', ' ').title()
+        #             if display_name == "Original Audio":
+        #                 display_name = "שמע מקורי"
+        #             elif display_name == "Male Voice":
+        #                 display_name = "קול גבר"
+        #             elif display_name == "Female Voice":
+        #                 display_name = "קול אישה"
+                        
+        #             st.markdown(f"**{display_name}**")
+                    
+        #             # Convert to MP3
+        #             mp3_path = convert_to_mp3(audio_path, bitrate)
+        #             if mp3_path:
+        #                 with open(mp3_path, 'rb') as audio_file:
+        #                     audio_bytes = audio_file.read()
+        #                     st.audio(audio_bytes, format='audio/mp3')
+        #                     st.markdown(
+        #                         create_download_link(audio_bytes, f"{name}.mp3", f"⬇️ הורד {display_name} (MP3)"),
+        #                         unsafe_allow_html=True
+        #                     )
+        #                 # Clean up MP3 file
+        #                 try:
+        #                     os.unlink(mp3_path)
+        #                 except:
+        #                     pass
+        #     finally:
+        #         # Clean up temporary audio files
+        #         if os.path.exists(audio_path):
+        #             try:
+        #                 os.unlink(audio_path)
+        #             except Exception as e:
+        #                 st.warning(f"אזהרה: לא ניתן למחוק את קובץ השמע הזמני: {str(e)}")
 
     # Display footer content
     st.markdown(footer_content, unsafe_allow_html=True)    
