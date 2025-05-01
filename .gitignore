@@ -1,0 +1,8 @@
+*.code-workspace
+.env
+.streamlit
+/venv/
+/tests/
+/build/
+**/__pycache__/
+examples/AGIrevolutions.wav

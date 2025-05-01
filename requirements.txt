@@ -1,0 +1,37 @@
+# Core requirements
+streamlit>=1.24.0
+numpy>=1.24.3
+python-dotenv>=0.21.0
+
+# Audio processing libraries
+librosa>=0.10.0
+soundfile>=0.12.1
+pydub>=0.25.1
+torchaudio>=2.0.0
+
+# Deep learning
+torch>=2.0.0         # For GPU: pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
+pyannote.audio>=3.0.0
+demucs>=4.0.0
+
+# Visualization
+pandas>=2.0.0
+plotly>=5.13.0
+
+# Hugging Face
+huggingface_hub>=0.14.0
+
+# Additional dependencies
+ffmpeg-python>=0.2.0  # For audio conversion
+
+# Note: Whisper has been removed from dependencies
+
+# python.exe -m pip install --upgrade pip
+# pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Installation instructions:
+# 1. Create virtual environment: python -m venv .venv
+# 2. Activate environment: .\.venv\Scripts\activate (Windows) or source .venv/bin/activate (Linux/Mac)
+# 3. Install packages: pip install -r requirements.txt
+# 4. For GPU support: pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
+# 5. Run app: streamlit run main.py
