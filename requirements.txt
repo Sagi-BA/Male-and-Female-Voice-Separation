@@ -9,12 +9,11 @@ soundfile==0.12.1
 pydub==0.25.1
 ffmpeg-python==0.2.0
 
-# Deep learning - with compatible versions for Streamlit
-torch==2.0.0
-torchaudio==2.0.0
-# --extra-index-url https://download.pytorch.org/whl/cpu
-pyannote.audio==3.0.0
-demucs==4.0.0
+# Deep learning - with compatible versions for Streamlit's Python 3.12
+torch>=2.1.0
+torchaudio>=2.1.0
+pyannote.audio>=3.0.0
+demucs>=4.0.0
 
 # Visualization
 pandas==2.0.0

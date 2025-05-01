@@ -193,7 +193,13 @@ def process_audio(temp_path):
             return None
 
         with torch.no_grad():
-            sources = apply_model(model, audio, device=DEVICE)
+            # Fixed autocast with device_type parameter
+            if torch.cuda.is_available():
+                with torch.autocast(device_type='cuda'):
+                    sources = apply_model(model, audio, device=DEVICE)
+            else:
+                # No autocast needed for CPU
+                sources = apply_model(model, audio, device=DEVICE)
         
         # Get vocals and convert to mono
         vocals = sources[0][3]  # Index 3 corresponds to vocals
