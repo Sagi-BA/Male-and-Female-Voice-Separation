@@ -1,6 +1,6 @@
 # Core requirements
 streamlit==1.24.0
-numpy==1.24.3
+numpy<2.0.0
 python-dotenv==0.21.0
 
 # Audio processing libraries
@@ -9,11 +9,12 @@ soundfile==0.12.1
 pydub==0.25.1
 ffmpeg-python==0.2.0
 
-# Deep learning - with compatible versions for Streamlit's Python 3.12
-torch>=2.1.0
-torchaudio>=2.1.0
-pyannote.audio>=3.0.0
-demucs>=4.0.0
+# Deep learning - with compatible versions
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.13.1+cpu
+torchaudio==0.13.1+cpu
+pyannote.audio==3.0.0
+demucs==4.0.0
 
 # Visualization
 pandas==2.0.0
