@@ -1,0 +1,80 @@
+<style>
+  .custom-expander {
+    background-color: #f0f8ff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  .custom-expander label {
+    color: #1e90ff;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: block;
+  }
+  .expander-toggle {
+    display: none;
+  }
+  .expander-content {
+    font-size: 26px;
+    line-height: 1.6;
+    color: #000000; /* Changed to black */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+  .expander-toggle:checked + label + .expander-content {
+    max-height: 1000px; /* Adjust this value based on your content */
+  }
+  .expander-content p {
+    margin-bottom: 10px;
+  }
+  .highlight {
+    background: linear-gradient(120deg, #ffd700 0%, #ffd700 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    transition: background-size 0.25s ease-in;
+  }
+  .highlight:hover {
+    background-size: 100% 88%;
+  }
+  .expander-toggle + label::after {
+    content: " ▼";
+  }
+  .expander-toggle:checked + label::after {
+    content: " ▲";
+  }
+  .centered-image {
+    width: 300px;
+    display: block;
+    margin: 20px auto;
+  }
+</style>
+
+<div class="custom-expander">
+  <input type="checkbox" id="expander-toggle" class="expander-toggle" />
+  <label for="expander-toggle">אודות האפליקציה</label>
+  <div class="expander-content">
+    VoiceSplit היא אפליקציה חכמה שמפרידה אוטומטית בין קולות גבר וקולות אישה מקובץ שמע. 
+האפליקציה משתמשת בטכנולוגיות בינה מלאכותית מתקדמות כדי לזהות ולהפריד את הקולות בצורה מדויקת.
+<br />
+<strong>איך זה עובד?</strong><br>
+      1. העלאת קובץ שמע (MP3, WAV או M4A)<br>
+      2. זיהוי אוטומטי של קולות הגבר והאישה<br>
+      3. הפרדת הקולות לקבצים נפרדים<br>
+      4. אפשרות להורדת הקבצים בפורמט MP3
+<br />
+קל לשימוש, מהיר וחינמי! נסו עכשיו ⭐
+<br />
+    עדכון אחרון: 01/05/2025
+    <img
+      src="https://i.imgur.com/OvsufPd_d.png?maxwidth=520&shape=thumb&fidelity=high"
+      alt="VoiceSplit"
+      class="centered-image"
+    />
+  </div>
+</div>

@@ -1,0 +1,499 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap");
+
+:root {
+  --main-bg-color: #ffffff;
+  --secondary-bg-color: #dccdd4;
+  --text-color: #000000;
+  --accent-color: #4bb3fd;
+  --glow-color: #4bb3fd;
+  --button-text-color: #ffffff;
+}
+
+/* Base Styles */
+.stApp {
+  background-color: var(--main-bg-color);
+}
+
+body {
+  font-family: "Exo 2", sans-serif;
+  direction: rtl;
+}
+
+/* Layout & Spacing */
+.main {
+  padding-top: 1rem !important;
+}
+
+.block-container {
+  padding-top: 0rem !important;
+  padding-bottom: 0rem !important;
+}
+
+[data-testid="stHeader"] {
+  margin-bottom: 0 !important;
+}
+
+header[data-testid="stHeader"] {
+  height: auto !important;
+  padding: 0.1rem !important;
+}
+
+.stHeadingContainer {
+  margin-top: 0 !important;
+  padding-top: 0rem !important;
+}
+
+[data-testid="stAppViewContainer"] > .main {
+  padding-top: 0rem !important;
+}
+
+.streamlit-expanderHeader {
+  margin-top: 0.2rem !important;
+}
+
+/* Hide Streamlit Elements */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+#root > div:nth-child(1) > div > div > div > div > section > div {padding-top: 0rem;}
+
+/* Typography */
+.stMarkdown,
+.stText,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span {
+  color: var(--text-color) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Orbitron", sans-serif;
+  color: var(--accent-color);
+  text-shadow: 0 0 10px var(--glow-color);
+}
+
+p {
+  font-size: 25px !important;
+}
+
+/* User Stats */
+.user-count {
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 1px;
+}
+
+.last-datetime-use {
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 1px;
+  font-size: 8px;
+}
+
+/* Radio Buttons */
+div.row-widget.stRadio > div {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+div.row-widget.stRadio > div label {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+div.row-widget.stRadio > div label:hover {
+  background: #e9ecef;
+}
+
+/* File Uploader */
+.stFileUploader {
+  padding: 2rem;
+  border: 2px dashed #023d79;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.stFileUploader {
+    padding: 2rem;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    text-align: center;
+    direction: rtl;  /* Add RTL support */
+}
+
+/* Make the uploader area more visible */
+.stFileUploader > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
+    padding: 20px;
+    cursor: pointer;
+}
+
+/* Style for the button text */
+.stFileUploader > div button {
+    font-family: "Heebo", sans-serif !important;  /* Hebrew font */
+    color: black !important;
+    direction: rtl !important;
+}
+
+/* File type text styling */
+.stFileUploader p {
+    font-family: "Heebo", sans-serif !important;
+    color: #666666 !important;
+    font-size: 0.9em !important;
+    margin-top: 8px;
+    direction: rtl !important;
+}
+
+/* Hover effect */
+.stFileUploader > div:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+/* Buttons */
+
+button span, 
+button p,
+button div,
+.stButton button,
+.stButton button span,
+.stButton button p,
+.stButton button div {
+  color: var(--button-text-color) !important;
+}
+
+.stButton > button {
+  width: 100%;
+  color: var(--button-text-color) !important;
+  background-color: #4caf50 !important;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform-origin: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stButton > button:hover {
+  background-color: #45a049 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  color: var(--button-text-color) !important;
+}
+
+.stButton > button:active {
+  background-color: #3e8e41;
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  color: var(--button-text-color) !important;
+}
+
+/* Form Submit Button */
+.stFormSubmitButton > button {
+  font-family: "Orbitron", sans-serif !important;
+  color: var(--button-text-color) !important;
+  background-color: #ff0000ac;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+}
+
+.stFormSubmitButton > button:hover {
+  background-color: #cc0000;
+  color: var(--button-text-color) !important;
+}
+
+.stFormSubmitButton > button:active {
+  background-color: #990000;
+  color: var(--button-text-color) !important;
+}
+
+/* Image Styles */
+.stImage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.stImage:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.stImage img {
+  transition: all 0.5s ease-in-out;
+  backface-visibility: hidden;
+}
+
+.stImage:hover img {
+  transform: scale(1.02);
+}
+
+/* Glass Morphism Effect */
+[data-testid="column"]:nth-of-type(2) .stImage {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Sample Images Grid */
+[data-testid="column"]:nth-of-type(1) .stImage {
+  margin-bottom: 20px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+[data-testid="column"]:nth-of-type(1) .stImage:hover {
+  border-color: #6c5ce7;
+}
+
+/* Generated Image Effect */
+.element-container:has(img[src*="generated"]) .stImage {
+  animation: fadeIn 0.5s ease-out;
+  border: 3px solid #6c5ce7;
+  padding: 5px;
+}
+
+/* Custom Sections */
+.custom-section {
+  transition: all 0.3s ease;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 2px solid transparent;
+}
+
+.custom-section:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.style-section {
+  background-color: #f0f8ff;
+}
+
+.style-section:hover {
+  border-color: #1e88e5;
+}
+
+/* WhatsApp Section */
+.whatsapp-section {
+  background-color: #e8f5e9;
+}
+
+.whatsapp-section:hover {
+  border-color: #2e7d32;
+}
+
+.whatsapp-section button {
+  background: linear-gradient(45deg, #25d366, #128C7E) !important;
+  color: var(--button-text-color) !important;
+  border: none !important;
+  font-weight: bold !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease !important;
+  animation: whatsapp-pulse 2s infinite;
+}
+
+.whatsapp-section button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shine 3s infinite;
+}
+
+.whatsapp-section button:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 8px 15px rgba(37, 211, 102, 0.3) !important;
+  color: var(--button-text-color) !important;
+}
+
+/* Form Elements */
+.stSelectbox:hover {
+  border-color: #1e88e5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stTextInput:hover {
+  border-color: #2e7d32;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes whatsapp-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title Animation */
+.title-animation {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1125px) {
+  .button {
+    width: 225px;
+  }
+
+  h1 {
+    font-size: 56px;
+  }
+}
+
+@media screen and (max-width: 990px) {
+  .button {
+    width: 223px;
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 880px) {
+  .button {
+    width: 242px;
+  }
+
+  h1 {
+    font-size: 40px;
+  }
+
+  h3 {
+    font-size: 13px;
+  }
+
+  img {
+    max-height: 540px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .stImage {
+    margin: 10px 0;
+    border-radius: 10px;
+  }
+  
+  .stImage:hover {
+    transform: none;
+  }
+  
+  .model-name {
+    writing-mode: horizontal-tb;
+    text-orientation: initial;
+    transform: rotate(0deg);
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .button {
+    margin-top: 5px;
+    width: 288px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 500;
+  }
+
+  h3 {
+    font-size: 10px;
+  }
+
+  img {
+    max-height: 432px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .button {
+    width: 250px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 9px;
+  }
+}

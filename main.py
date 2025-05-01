@@ -26,7 +26,8 @@ import torchaudio
 from dotenv import load_dotenv
 from pyannote.audio import Pipeline
 from pyannote.core import Segment
-
+from utils.counter import increment_user_count, get_user_count
+from utils.init import initialize
 # Load environment variables from .env file
 load_dotenv()
 
@@ -38,7 +39,8 @@ except:
 
 # Set page configuration
 st.set_page_config(
-    page_title="VoiceSplit - Voice Separation",
+    initial_sidebar_state="collapsed",
+    page_title="VoiceSplit - הפרדת קולות",
     page_icon="🎤",
     layout="wide",
 )
@@ -280,6 +282,10 @@ def process_audio(temp_path):
 # Custom CSS for better UI
 st.markdown("""
 <style>
+    body {
+        direction: rtl;
+        text-align: right;
+    }
     .main {
         padding: 2rem;
     }
@@ -351,6 +357,13 @@ def create_timeline_chart(timeline_data):
 
     df = pd.DataFrame(timeline_data)
 
+    # Translate speaker names to Hebrew
+    df['speaker'] = df['speaker'].replace({
+        'Original Audio': 'שמע מקורי',
+        'Male Voice': 'קול גבר',
+        'Female Voice': 'קול אישה'
+    })
+
     speakers = df['speaker'].unique()
     colors = px.colors.qualitative.Set3[:len(speakers)]
     color_map = dict(zip(speakers, colors))
@@ -376,7 +389,15 @@ def create_timeline_chart(timeline_data):
         barmode='overlay',
         height=300,
         plot_bgcolor='white',
-        paper_bgcolor='white'
+        paper_bgcolor='white',
+        # RTL support
+        xaxis=dict(
+            side='top',
+            autorange='reversed'
+        ),
+        yaxis=dict(
+            side='right'
+        )
     )
 
     return fig
@@ -415,29 +436,68 @@ def file_uploader_with_path():
             return None, None
     return None, None
 
+def convert_to_mp3(wav_path, bitrate='64k'):
+    """Convert WAV file to MP3 with specified bitrate"""
+    try:
+        # Load the WAV file
+        audio = AudioSegment.from_wav(wav_path)
+        # Create MP3 file path
+        mp3_path = wav_path.replace('.wav', '.mp3')
+        # Export as MP3 with specified bitrate
+        audio.export(mp3_path, format='mp3', bitrate=bitrate)
+        return mp3_path
+    except Exception as e:
+        st.error(f"שגיאה בהמרת הקובץ ל-MP3: {str(e)}")
+        return None
+
+
+def hide_streamlit_header_footer():
+    hide_st_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        #root > div:nth-child(1) > div > div > div > div > section > div {padding-top: 0rem;}
+    </style>
+    """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
+
+def load_html_file(file_name):
+    with open(file_name, 'r', encoding='utf-8') as f:
+        return f.read()
+    
 def main():
+    with st.spinner('האפליקציה נטענת...'):
+        footer_content = initialize()
+        # # st.title("🎨 מחולל התמונות החכם")
+        hide_streamlit_header_footer()        
+
+        # Load and display the custom expander HTML
+        expander_html = load_html_file('expander.html')
+        st.markdown(expander_html, unsafe_allow_html=True)    
+
     initialize_session_state()
 
     st.title("🎤 VoiceSplit")
-    st.subheader("Male/Female Voice Separation")
+    st.subheader("הפרדת קולות גבר/אישה")
     
     # Display device and GPU information
     gpu_info = get_gpu_info()
     if gpu_info:
-        st.write("### 🎮 Hardware Information")
+        st.write("### 🎮 מידע על החומרה")
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.success(f"🚀 GPU: {gpu_info['name']}")
+            st.success(f"🚀 כרטיס מסך: {gpu_info['name']}")
         with col2:
-            st.info(f"⚡ CUDA: {gpu_info['cuda_version']} (Capability {gpu_info['cuda_capability']}")
+            st.info(f"⚡ CUDA: {gpu_info['cuda_version']} (יכולת {gpu_info['cuda_capability']}")
         with col3:
-            st.info(f"💾 GPU Memory: {gpu_info['total_memory']}")
+            st.info(f"💾 זיכרון כרטיס מסך: {gpu_info['total_memory']}")
     else:
-        st.warning("🔧 Running on CPU - Processing will be slower. For better performance, please ensure CUDA is properly installed.")
+        st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
 
     # File upload section
-    st.markdown("### 📂 Step 1: Upload Audio File")
-    st.markdown("Upload your audio file (MP3, WAV, or M4A format)")
+    st.markdown("### 📂 שלב 1: העלאת קובץ שמע")
+    st.markdown("העלה את קובץ השמע שלך (פורמט MP3, WAV או M4A)")
     
     temp_path = None
     try:
@@ -451,58 +511,105 @@ def main():
                     st.audio(uploaded_file, format=f'audio/{uploaded_file.name.split(".")[-1].lower()}')
                 
                 # Process button
-                st.markdown("### ⚙️ Step 2: Process Audio")
-                if st.button("🎯 Separate Voices"):
-                    with st.spinner("🔄 Processing your audio..."):
+                st.markdown("### ⚙️ שלב 2: עיבוד השמע")
+
+                 # Add bitrate selection
+                bitrate = st.selectbox(
+                    "בחר איכות קובץ MP3:",
+                    options=['64k', '96k', '128k', '192k', '256k'],
+                    index=0,
+                    help="איכות נמוכה יותר = גודל קובץ קטן יותר"
+                )
+                
+                if st.button("🎯 הפרדת הקולות"):
+                    progress_bar = st.progress(0)
+                    status_text = st.empty()
+                    
+                    with st.spinner("🔄 מעבד את השמע שלך..."):
+                        status_text.text("⚡ טוען מודל Demucs...")
+                        progress_bar.progress(20)
+                        
+                        status_text.text("🎤 מפריד קולות...")
+                        progress_bar.progress(40)
+                        
                         result = process_audio(temp_path)
                         
                         if result:
+                            status_text.text("✅ עיבוד הושלם בהצלחה!")
+                            progress_bar.progress(100)
+                            
                             st.session_state.processed = True
                             st.session_state.speaker_audios = result["speaker_files"]
                             st.session_state.timeline_data = result["timeline_data"]
-                            st.experimental_rerun()
+                            st.rerun()
+                        else:
+                            status_text.text("❌ שגיאה בעיבוד השמע")
+                            progress_bar.progress(0)
             except sf.SoundFileError as e:
-                st.error(f"Error: Invalid or corrupted audio file. Please try uploading a different file. Details: {str(e)}")
+                st.error(f"שגיאה: קובץ שמע לא תקין או פגום. אנא נסה להעלות קובץ אחר. פרטים: {str(e)}")
             except Exception as e:
-                st.error(f"Error processing audio file: {str(e)}")
+                st.error(f"שגיאה בעיבוד קובץ השמע: {str(e)}")
     finally:
         # Clean up temporary file when done
         if temp_path and os.path.exists(temp_path):
             try:
                 os.unlink(temp_path)
             except Exception as e:
-                st.warning(f"Warning: Could not delete temporary file: {str(e)}")
+                st.warning(f"אזהרה: לא ניתן למחוק את הקובץ הזמני: {str(e)}")
 
     # Results section
     if st.session_state.processed:
-        st.markdown("### 📊 Step 3: Results")
+        st.markdown("### 📊 שלב 3: תוצאות")
         
         # Display timeline visualization
-        st.markdown("#### 📈 Audio Timeline")
+        st.markdown("#### 📈 ציר זמן של השמע")
         timeline_chart = create_timeline_chart(st.session_state.timeline_data)
         st.plotly_chart(timeline_chart, use_container_width=True)
 
         # Display and download audio files
-        st.markdown("#### 🔊 Audio Files")
+        st.markdown("#### 🔊 קבצי שמע")
         for name, audio_path in st.session_state.speaker_audios.items():
             try:
                 if os.path.exists(audio_path):
                     display_name = name.replace('_', ' ').title()
+                    if display_name == "Original Audio":
+                        display_name = "שמע מקורי"
+                    elif display_name == "Male Voice":
+                        display_name = "קול גבר"
+                    elif display_name == "Female Voice":
+                        display_name = "קול אישה"
+                        
                     st.markdown(f"**{display_name}**")
-                    with open(audio_path, 'rb') as audio_file:
-                        audio_bytes = audio_file.read()
-                        st.audio(audio_bytes, format='audio/wav')
-                        st.markdown(
-                            create_download_link(audio_bytes, f"{name}.wav", f"⬇️ Download {display_name}"),
-                            unsafe_allow_html=True
-                        )
+                    
+                    # Convert to MP3
+                    mp3_path = convert_to_mp3(audio_path, bitrate)
+                    if mp3_path:
+                        with open(mp3_path, 'rb') as audio_file:
+                            audio_bytes = audio_file.read()
+                            st.audio(audio_bytes, format='audio/mp3')
+                            st.markdown(
+                                create_download_link(audio_bytes, f"{name}.mp3", f"⬇️ הורד {display_name} (MP3)"),
+                                unsafe_allow_html=True
+                            )
+                        # Clean up MP3 file
+                        try:
+                            os.unlink(mp3_path)
+                        except:
+                            pass
             finally:
                 # Clean up temporary audio files
                 if os.path.exists(audio_path):
                     try:
                         os.unlink(audio_path)
                     except Exception as e:
-                        st.warning(f"Warning: Could not delete temporary audio file: {str(e)}")
+                        st.warning(f"אזהרה: לא ניתן למחוק את קובץ השמע הזמני: {str(e)}")
 
+    # Display footer content
+    st.markdown(footer_content, unsafe_allow_html=True)    
+
+    # Display user count
+    user_count = get_user_count(formatted=True)
+    # print(user_count)
+    st.markdown(f"<p class='user-count' style='color: #4B0082;'>סה\"כ משתמשים: {user_count}</p>", unsafe_allow_html=True)
 if __name__ == "__main__":
     main()
