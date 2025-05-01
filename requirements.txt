@@ -1,32 +1,58 @@
 # Core requirements
-streamlit==1.24.0
-numpy<2.0.0
-python-dotenv==0.21.0
+# streamlit==1.24.0
+# numpy<2.0.0
+# python-dotenv==0.21.0
+
+# # Audio processing libraries
+# librosa==0.10.0
+# soundfile==0.12.1
+# pydub==0.25.1
+# ffmpeg-python==0.2.0
+
+# # Deep learning - latest stable versions
+# # --find-links https://download.pytorch.org/whl/torch_stable.html
+# torch==2.2.0
+# torchaudio==2.2.0
+# pyannote.audio==3.0.0
+# demucs==4.0.0
+
+# # Visualization
+# pandas==2.0.0
+# plotly==5.13.0
+
+# # Hugging Face
+# huggingface_hub==0.14.0
+
+# # Needed dependencies
+# setuptools>=65.0.0
+# wheel>=0.37.0
+
+
+# Core requirements
+streamlit>=1.24.0
+numpy>=1.24.3
+python-dotenv>=0.21.0
 
 # Audio processing libraries
-librosa==0.10.0
-soundfile==0.12.1
-pydub==0.25.1
-ffmpeg-python==0.2.0
+librosa>=0.10.0
+soundfile>=0.12.1
+pydub>=0.25.1
+torchaudio>=2.0.0
 
-# Deep learning - latest stable versions
-# --find-links https://download.pytorch.org/whl/torch_stable.html
-torch==2.2.0
-torchaudio==2.2.0
-pyannote.audio==3.0.0
-demucs==4.0.0
+# Deep learning
+torch>=2.0.0         # For GPU: pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
+pyannote.audio>=3.0.0
+demucs>=4.0.0
 
 # Visualization
-pandas==2.0.0
-plotly==5.13.0
+pandas>=2.0.0
+plotly>=5.13.0
 
 # Hugging Face
-huggingface_hub==0.14.0
+huggingface_hub>=0.14.0
 
-# Needed dependencies
-setuptools>=65.0.0
-wheel>=0.37.0
-
+# Additional dependencies
+ffmpeg-python>=0.2.0  # For audio conversion
 
 # Note: Whisper has been removed from dependencies
 
