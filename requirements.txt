@@ -8,6 +8,8 @@ librosa>=0.10.0
 soundfile>=0.12.1
 pydub>=0.25.1
 torchaudio>=2.0.0
+ffmpeg-python>=0.2.0
+av>=10.0.0  # Required for pydub audio processing
 
 # Deep learning
 torch>=2.0.0         # For GPU: pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
@@ -20,9 +22,6 @@ plotly>=5.13.0
 
 # Hugging Face
 huggingface_hub>=0.14.0
-
-# Additional dependencies
-ffmpeg-python==0.2.0  # For audio conversion
 
 # Note: Whisper has been removed from dependencies
 
