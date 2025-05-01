@@ -30,10 +30,16 @@ from utils.counter import increment_user_count, get_user_count
 from utils.init import initialize
 
 # Fix for asyncio error
-try:
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-except:
-    pass
+def setup_asyncio():
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop
+
+# Initialize asyncio
+loop = setup_asyncio()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -63,6 +69,20 @@ if torch.cuda.is_available():
     # Set deterministic algorithms for reproducibility
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
+# Fix for torch path issue
+def setup_torch():
+    try:
+        # Initialize torch with custom settings
+        torch.set_num_threads(1)
+        torch.set_num_interop_threads(1)
+        # Disable torch's internal file watcher
+        torch.utils.data._utils.worker._worker_loop = None
+    except Exception as e:
+        st.warning(f"Warning: Could not fully initialize torch: {str(e)}")
+
+# Initialize torch
+setup_torch()
 
 from torch.amp import autocast
 
@@ -518,8 +538,8 @@ def main():
             st.info(f"⚡ CUDA: {gpu_info['cuda_version']} (יכולת {gpu_info['cuda_capability']}")
         with col3:
             st.info(f"💾 זיכרון כרטיס מסך: {gpu_info['total_memory']}")
-    else:
-        st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
+    # else:
+    #     st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
 
      # Load and display the custom expander HTML
     expander_html = load_html_file('expander.html')
