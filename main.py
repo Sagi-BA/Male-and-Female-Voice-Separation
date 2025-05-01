@@ -45,6 +45,12 @@ st.set_page_config(
     layout="wide",
 )
 
+# Initialize session state if not exists
+if 'state' not in st.session_state:
+    st.session_state.state = {
+        'counted': False        
+    }
+
 # CUDA setup and device information
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if torch.cuda.is_available():
@@ -610,5 +616,11 @@ def main():
     user_count = get_user_count(formatted=True)
     # print(user_count)
     st.markdown(f"<p class='user-count' style='color: #4B0082;'>סה\"כ משתמשים: {user_count}</p>", unsafe_allow_html=True)
+
 if __name__ == "__main__":
+    # Increment user count on first load
+    if 'counted' not in st.session_state:
+        st.session_state.counted = True
+        increment_user_count()
+
     main()
