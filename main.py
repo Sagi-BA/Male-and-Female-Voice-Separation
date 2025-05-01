@@ -470,21 +470,16 @@ def main():
     with st.spinner('האפליקציה נטענת...'):
         footer_content = initialize()
         # # st.title("🎨 מחולל התמונות החכם")
-        hide_streamlit_header_footer()        
-
-        # Load and display the custom expander HTML
-        expander_html = load_html_file('expander.html')
-        st.markdown(expander_html, unsafe_allow_html=True)    
+        hide_streamlit_header_footer()               
 
     initialize_session_state()
 
-    st.title("🎤 VoiceSplit")
-    st.subheader("הפרדת קולות גבר/אישה")
+    st.title("🎤 VoiceSplit - הפרדת קולות גבר/אישה")
     
     # Display device and GPU information
     gpu_info = get_gpu_info()
     if gpu_info:
-        st.write("### 🎮 מידע על החומרה")
+        # st.write("### 🎮 מידע על החומרה")
         col1, col2, col3 = st.columns(3)
         with col1:
             st.success(f"🚀 כרטיס מסך: {gpu_info['name']}")
@@ -494,6 +489,10 @@ def main():
             st.info(f"💾 זיכרון כרטיס מסך: {gpu_info['total_memory']}")
     else:
         st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
+
+     # Load and display the custom expander HTML
+    expander_html = load_html_file('expander.html')
+    st.markdown(expander_html, unsafe_allow_html=True)    
 
     # File upload section
     st.markdown("### 📂 שלב 1: העלאת קובץ שמע")
