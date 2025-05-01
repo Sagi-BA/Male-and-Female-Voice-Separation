@@ -10,7 +10,7 @@ pydub==0.25.1
 ffmpeg-python==0.2.0
 
 # Deep learning - latest stable versions
---find-links https://download.pytorch.org/whl/torch_stable.html
+# --find-links https://download.pytorch.org/whl/torch_stable.html
 torch==2.2.0
 torchaudio==2.2.0
 pyannote.audio==3.0.0
