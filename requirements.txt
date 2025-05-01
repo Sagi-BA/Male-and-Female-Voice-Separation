@@ -22,7 +22,7 @@ plotly>=5.13.0
 huggingface_hub>=0.14.0
 
 # Additional dependencies
-ffmpeg-python>=0.2.0  # For audio conversion
+ffmpeg-python==0.2.0  # For audio conversion
 
 # Note: Whisper has been removed from dependencies
 

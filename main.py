@@ -442,8 +442,30 @@ def file_uploader_with_path():
             return None, None
     return None, None
 
+def check_ffmpeg_installation():
+    """Check if ffmpeg is installed and available in PATH"""
+    try:
+        import subprocess
+        subprocess.run(['ffmpeg', '-version'], capture_output=True, check=True)
+        return True
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return False
+
 def convert_to_mp3(wav_path, bitrate='64k'):
     """Convert WAV file to MP3 with specified bitrate"""
+    if not check_ffmpeg_installation():
+        st.error("""
+        ❌ שגיאה: ffmpeg לא מותקן במערכת.
+        
+        אנא התקן את ffmpeg:
+        1. הורד והתקן מ-https://ffmpeg.org/download.html
+        2. או השתמש ב-Chocolatey: `choco install ffmpeg`
+        3. או השתמש ב-Winget: `winget install ffmpeg`
+        
+        לאחר ההתקנה, הפעל מחדש את האפליקציה.
+        """)
+        return None
+
     try:
         # Load the WAV file
         audio = AudioSegment.from_wav(wav_path)
@@ -455,7 +477,6 @@ def convert_to_mp3(wav_path, bitrate='64k'):
     except Exception as e:
         st.error(f"שגיאה בהמרת הקובץ ל-MP3: {str(e)}")
         return None
-
 
 def hide_streamlit_header_footer():
     hide_st_style = """
