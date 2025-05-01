@@ -28,14 +28,15 @@ from pyannote.audio import Pipeline
 from pyannote.core import Segment
 from utils.counter import increment_user_count, get_user_count
 from utils.init import initialize
-# Load environment variables from .env file
-load_dotenv()
 
 # Fix for asyncio error
 try:
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 except:
     pass
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Set page configuration
 st.set_page_config(
@@ -454,16 +455,31 @@ def check_ffmpeg_installation():
 def convert_to_mp3(wav_path, bitrate='64k'):
     """Convert WAV file to MP3 with specified bitrate"""
     try:
+        # Set custom ffmpeg path if available
+        if os.path.exists('/usr/bin/ffmpeg'):
+            AudioSegment.converter = '/usr/bin/ffmpeg'
+        elif os.path.exists('/usr/local/bin/ffmpeg'):
+            AudioSegment.converter = '/usr/local/bin/ffmpeg'
+        
         # Load the WAV file
         audio = AudioSegment.from_wav(wav_path)
+        
         # Create MP3 file path
         mp3_path = wav_path.replace('.wav', '.mp3')
+        
         # Export as MP3 with specified bitrate
-        audio.export(mp3_path, format='mp3', bitrate=bitrate, parameters=["-acodec", "libmp3lame"])
+        audio.export(mp3_path, format='mp3', bitrate=bitrate)
+        
         return mp3_path
     except Exception as e:
         st.error(f"שגיאה בהמרת הקובץ ל-MP3: {str(e)}")
-        st.error("אנא וודא שהספרייה ffmpeg-python מותקנת כראוי.")
+        st.error("""
+        אנא וודא ש-ffmpeg מותקן בשרת:
+        1. התחבר לשרת דרך SSH
+        2. הרץ: sudo apt-get update
+        3. הרץ: sudo apt-get install ffmpeg
+        4. הפעל מחדש את האפליקציה
+        """)
         return None
 
 def hide_streamlit_header_footer():
