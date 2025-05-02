@@ -7,10 +7,11 @@ python-dotenv>=0.21.0
 librosa>=0.10.0
 soundfile>=0.12.1
 pydub>=0.25.1
-torchaudio>=2.0.0
+torchaudio==2.2.0
+ffmpeg-python>=0.2.0
 
-# Deep learning
-torch>=2.0.0         # For GPU: pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
+# Deep learning (CPU only for Streamlit Cloud)
+torch==2.2.0
 pyannote.audio>=3.0.0
 demucs>=4.0.0
 
@@ -21,10 +22,7 @@ plotly>=5.13.0
 # Hugging Face
 huggingface_hub>=0.14.0
 
-# Additional dependencies
-ffmpeg-python>=0.2.0  # For audio conversion
-
-# Additional stability requirements
+# Stability and system
 tornado>=6.1
 protobuf>=3.19.0
 watchdog>=2.1.6

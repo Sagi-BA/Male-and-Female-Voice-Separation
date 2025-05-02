@@ -1,21 +1,17 @@
 #sagi changes 01_05_2025
 # https://dashboard.pyannote.ai/
 # https://huggingface.co/pyannote/segmentation-3.0
+import sys
 import asyncio
 import streamlit as st
 import numpy as np
-import io
 import os
 import base64
 import tempfile
-import time
-from pathlib import Path
 import torch
-# import whisper  # Removed whisper import
 import librosa
 import soundfile as sf
 from pydub import AudioSegment
-import json
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -29,11 +25,12 @@ from pyannote.core import Segment
 from utils.counter import increment_user_count, get_user_count
 from utils.init import initialize
 
-# Fix for asyncio error
+# 🛠️ תיקון לתאימות עם מערכות הפעלה שונות
 try:
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-except:
-    pass
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+except Exception as e:
+    print(f"Asyncio policy setup skipped: {e}")
 
 # Load environment variables from .env file
 load_dotenv()
@@ -95,14 +92,23 @@ if torch.cuda.is_available():
 else:
     print("CUDA is not available. Using CPU.")
 
-# Utility: Convert MP3 to WAV if needed
-def convert_to_wav(input_path):
-    if input_path.lower().endswith(".mp3"):
-        audio = AudioSegment.from_mp3(input_path)
-        wav_path = input_path.replace(".mp3", ".wav")
-        audio.export(wav_path, format="wav")
-        return wav_path
-    return input_path
+def load_demucs_model():
+    try:
+        model = get_model('htdemucs')
+        model.to(DEVICE)
+        return model
+    except Exception as e:
+        st.error(f"Error loading Demucs model: {str(e)}")
+        return None
+    
+# # Utility: Convert MP3 to WAV if needed
+# def convert_to_wav(input_path):
+#     if input_path.lower().endswith(".mp3"):
+#         audio = AudioSegment.from_mp3(input_path)
+#         wav_path = input_path.replace(".mp3", ".wav")
+#         audio.export(wav_path, format="wav")
+#         return wav_path
+#     return input_path
 
 @st.cache_resource
 def load_demucs_model():
