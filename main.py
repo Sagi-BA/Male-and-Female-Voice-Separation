@@ -40,10 +40,15 @@ load_dotenv()
 
 # Set page configuration
 st.set_page_config(
-    initial_sidebar_state="collapsed",
     page_title="VoiceSplit - הפרדת קולות",
     page_icon="🎤",
     layout="wide",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'About': "### VoiceSplit\nהפרדת קולות גבר/אישה",
+        'Report a bug': None,
+        'Get help': None
+    }
 )
 
 # Initialize session state if not exists
@@ -519,8 +524,8 @@ def main():
             st.info(f"⚡ CUDA: {gpu_info['cuda_version']} (יכולת {gpu_info['cuda_capability']}")
         with col3:
             st.info(f"💾 זיכרון כרטיס מסך: {gpu_info['total_memory']}")
-    else:
-        st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
+    # else:
+    #     st.warning("🔧 הרצה על מעבד - העיבוד יהיה איטי יותר. לקבלת ביצועים טובים יותר, אנא וודא ש-CUDA מותקן כראוי.")
 
      # Load and display the custom expander HTML
     expander_html = load_html_file('expander.html')
